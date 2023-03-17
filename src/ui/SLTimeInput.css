@@ -1,6 +1,47 @@
 /*
 Place your custom CSS here
 */
-.widget-hello-world {
+.widget-time-input {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    max-width: 72px;
+}
 
+.custom-alert {
+    position: absolute;
+    background: none !important;
+    display: flex;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+}
+
+.custom-alert:hover ~ .custom-alert-tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+.custom-alert-tooltip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 250px;
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    background-color: black;
+    color: white;
+    padding: 8px;
+    border-radius: 4px;
+    transition: all .15s ease-in-out;
+}
+
+.custom-alert-instruction {
+    font-size: 0.75em;
+}
+
+.custom-alert-icon {
+    width: 1em;
+    fill: currentColor;
 }

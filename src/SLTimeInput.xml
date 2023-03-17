@@ -8,6 +8,13 @@
     <icon/>
     <properties>
         <propertyGroup caption="General">
+            <propertyGroup caption="Label">
+                <systemProperty key="Label" />
+            </propertyGroup>
+            <propertyGroup caption="Editability">
+                <systemProperty key="Editability"/>
+            </propertyGroup>
+            <propertyGroup caption="Data Source">
             <property key="value" type="attribute" onChange="onValueChange" required="true">
                 <caption>Value</caption>
                 <description>Value of the time input</description>
@@ -16,11 +23,37 @@
                     <attributeType name="DateTime"/>
                 </attributeTypes>
             </property>
-                
-            <property key="onValueChange" type="action">
-                <caption>On change</caption>
+            </propertyGroup>
+            <propertyGroup caption="Events">
+                <property key="onValueChange" type="action">
+                    <caption>On change</caption>
+                    <description/>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Validation feedback">
+                <property key="mendixFeedback" type="boolean" defaultValue="false">
+                    <caption>Mendix feedback</caption>
+                    <description/>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Invalid message">
+                <property key="invalidMessage" type="textTemplate" required="true">
+                <caption>Invalid message</caption>
                 <description/>
-            </property>
+                <translations>
+                    <translation lang="en_US">Invalid input value</translation>
+                    <translation lang="nl_NL">Ongeldige invoerwaarde</translation>
+                </translations>
+                </property>
+                <property key="instructionMessage" type="textTemplate" required="true">
+                <caption>Instruction message</caption>
+                <description/>
+                <translations>
+                    <translation lang="en_US">Valid input examples: 07:30 7.5 7,5 0730 7h30m </translation>
+                    <translation lang="nl_NL">Voorbeelden geldige invoer: 07:30 7.5 7,5 0730 7u30m</translation>
+                </translations>
+                </property>
+            </propertyGroup>
         </propertyGroup>
     </properties>
 </widget>

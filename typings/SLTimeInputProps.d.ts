@@ -3,27 +3,24 @@
  * WARNING: All changes made to this file will be overwritten
  * @author Mendix Widgets Framework Team
  */
-import { CSSProperties } from "react";
-import { EditableValue } from "mendix";
+import { DynamicValue, EditableValue } from "mendix";
 import { Big } from "big.js";
 
 export interface SLTimeInputContainerProps {
     name: string;
-    class: string;
-    style?: CSSProperties;
     tabIndex?: number;
+    id: string;
     value: EditableValue<Big | Date>;
+    mendixFeedback: boolean;
+    invalidMessage: DynamicValue<string>;
+    instructionMessage: DynamicValue<string>;
 }
 
 export interface SLTimeInputPreviewProps {
-    /**
-     * @deprecated Deprecated since version 9.18.0. Please use class property instead.
-     */
-    className: string;
-    class: string;
-    style: string;
-    styleObject?: CSSProperties;
     readOnly: boolean;
     value: string;
     onValueChange: {} | null;
+    mendixFeedback: boolean;
+    invalidMessage: string;
+    instructionMessage: string;
 }
