@@ -3,8 +3,8 @@
         supportedPlatform="Web"
         xmlns="http://www.mendix.com/widget/1.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.mendix.com/widget/1.0/ ../node_modules/mendix/custom_widget.xsd">
-    <name>SLTime Input</name>
-    <description>Time input widget based on human time input</description>
+    <name>SL - Time Input</name>
+    <description>Time input widget that allows several types of input</description>
     <icon/>
     <properties>
         <propertyGroup caption="General">

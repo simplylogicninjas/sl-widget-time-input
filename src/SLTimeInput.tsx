@@ -1,4 +1,5 @@
 import { ReactElement, createElement, Fragment, useState, useEffect } from "react";
+import { ValueStatus } from "mendix";
 import { TimeInput } from "./components/TimeInput";
 import { Alert } from "./components/Alert";
 import { SLTimeInputContainerProps } from "../typings/SLTimeInputProps";
@@ -18,31 +19,38 @@ function getOutputFormat(value?: Date | Big): 'datetime' | 'decimal' {
     }
 }
 
-function parseValue(value: Date | Big | string = '00:00') {
-    let inputValue = value;
+function parseValue(value: Date | Big | undefined): string {
+    if (value) {
+        let inputValue = value;
 
-    if (!value) {
-        inputValue = new Date();
-    }
+        if (inputValue instanceof Date) {
+            const hourString = inputValue?.getHours().toString();
+            const minuteString = inputValue?.getMinutes().toString();
 
-    if (inputValue instanceof Date) {
-        const hourString = inputValue?.getHours().toString();
-        const minuteString = inputValue?.getMinutes().toString();
-
-        return `${hourString.length === 1 ? `0${hourString}` : hourString}:${minuteString.length === 1 ? `0${minuteString}` : minuteString}`;
+            return `${hourString.length === 1 ? `0${hourString}` : hourString}:${minuteString.length === 1 ? `0${minuteString}` : minuteString}`;
+        } else {
+            return inputValue.toString().replace('.', ',');
+        }
     } else {
-        return inputValue.toString().replace('.', ',');
+        return '';
     }
 }
 
 export function SLTimeInput(props: SLTimeInputContainerProps): ReactElement {
     const [alert, setAlert] = useState<string>();
-    const onTimeInputChange = (output: Date | number) => {
+    const [inputValue, setInputValue] = useState<string | undefined>();
+
+    const onTimeInputChange = (output: Date | number | undefined) => {
         setAlert(undefined)
+
+        if (typeof output === 'undefined') {
+            props.value.setValue(undefined);
+        }
+
         if (output instanceof Date) {
             props.value.setValue(output)
         } else {
-            props.value.setValue(Big(output))
+            props.value.setValue(Big(output as number))
         }
     }
 
@@ -53,17 +61,26 @@ export function SLTimeInput(props: SLTimeInputContainerProps): ReactElement {
     useEffect(() => {
         props.value?.validation ? setAlert(props.value.validation) : setAlert(undefined)
     },[props.value?.validation])
+
+    useEffect(() => {
+        if (props.value && props.value.status === ValueStatus.Available) {
+            setInputValue(
+                parseValue(props.value.value)
+            )
+        }
+    }, [props.value?.value])
+
      return <Fragment>
-    <TimeInput
-        value={parseValue(props.value?.value)}
-        tabIndex={props.tabIndex}
-        outputFormat={getOutputFormat(props.value.value)}
-        outputDate={props.value.value && props.value.value instanceof Date ? props.value.value : new Date()}
-        onChange={onTimeInputChange}
-        disabled={props.value?.readOnly}
-        onError={onTimeInputError}
-    >
-    <Alert mendixFeedback={props.mendixFeedback} instructionMessage={props.instructionMessage?.value}>{alert}</Alert>
-    </TimeInput>
+        <TimeInput
+            value={inputValue}
+            tabIndex={props.tabIndex}
+            outputFormat={getOutputFormat(props.value.value)}
+            outputDate={props.value.value && props.value.value instanceof Date ? props.value.value : new Date()}
+            onChange={onTimeInputChange}
+            disabled={props.value?.readOnly}
+            onError={onTimeInputError}
+        >
+        <Alert mendixFeedback={props.mendixFeedback} instructionMessage={props.instructionMessage?.value}>{alert}</Alert>
+        </TimeInput>
     </Fragment>;
 }

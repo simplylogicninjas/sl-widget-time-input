@@ -1,4 +1,4 @@
-import { ReactElement, createElement, useState, useEffect, ReactNode, useRef } from "react";
+import { ReactElement, createElement, useState, useEffect, ReactNode } from "react";
 import { CSSProperties } from "react";
 import classNames from "classnames";
 
@@ -6,7 +6,7 @@ export interface Props {
   value?: string;
   outputFormat?: 'datetime' | 'decimal';
   outputDate?: Date;
-  onChange?: (value: Date | number) => void;
+  onChange?: (value: Date | number | undefined) => void;
   onError?: () => void;
   className?: string;
   index?: number;
@@ -60,8 +60,7 @@ function parseTimeString(timeString: string): Date | null {
 }
 
 export function TimeInput({ value, className, style, tabIndex, outputFormat, disabled, children, outputDate = new Date(), onChange, onError }: Props): ReactElement {
-  const [inputValue, setInputValue] = useState(value);
-  const initRef = useRef(false);
+  const [inputValue, setInputValue] = useState<string>('');
   const updateInputValue = (inputValue: string | undefined) => {
     let dateOutput: Date | null | undefined;
     if (inputValue) {
@@ -77,8 +76,15 @@ export function TimeInput({ value, className, style, tabIndex, outputFormat, dis
   }
 
   const onInputChange = () => {
-    if (inputValue) {
-      const date = updateInputValue(inputValue);
+    if (!inputValue) {
+      if (onChange) {
+        onChange(undefined);
+      }
+
+      return;
+    }
+
+    const date = updateInputValue(inputValue);
       if (date) {
         if (onChange) {
           if (outputFormat === 'datetime') {
@@ -99,7 +105,6 @@ export function TimeInput({ value, className, style, tabIndex, outputFormat, dis
           onError()
         }
       }
-    }
   }
 
   const onKeyUp = (e: React.KeyboardEvent) => {
@@ -109,10 +114,12 @@ export function TimeInput({ value, className, style, tabIndex, outputFormat, dis
   }
 
   useEffect(() => {
-    if (!initRef.current && value !== '00:00'){
-      updateInputValue(value);
-      initRef.current = true;
-    }
+    // if (!initRef.current && value !== '00:00') {
+    //   updateInputValue(value);
+    //   initRef.current = true;
+    // }
+
+    value ? updateInputValue(value) : setInputValue('');
   }, [value])
 
   return <div className="widget-time-input">
