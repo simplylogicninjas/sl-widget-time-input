@@ -38,6 +38,7 @@ Place your custom CSS here
     color: white;
     padding: 8px;
     border-radius: 4px;
+    z-index: 10;
     transition: all .15s ease-in-out;
 }
 

@@ -75,35 +75,41 @@ export function TimeInput({ value, className, style, tabIndex, outputFormat, dis
     return dateOutput;
   }
 
+  const triggerOnChange = (value: Date | number | undefined) => {
+    if (onChange) {
+      onChange(value);
+    }
+  }
+
+  const triggerError = () => {
+    if (onError) {
+      onError();
+    }
+  }
+
   const onInputChange = () => {
-    if (!inputValue) {
-      if (onChange) {
-        onChange(undefined);
-      }
+    if (inputValue === '') {
+      triggerOnChange(undefined);
 
       return;
     }
 
     const date = updateInputValue(inputValue);
       if (date) {
-        if (onChange) {
-          if (outputFormat === 'datetime') {
-            outputDate.setHours(date.getHours());
-            outputDate.setMinutes(date.getMinutes());
+        if (outputFormat === 'datetime') {
+          outputDate.setHours(date.getHours());
+          outputDate.setMinutes(date.getMinutes());
 
-            onChange(outputDate)
-          } else {
-            const hours = date.getHours();
-            const minutes = Math.ceil(date.getMinutes() / 60 * 100).toString();
-            const minutesFormatted = minutes.length === 1 ? `0${minutes}` : minutes;
+          triggerOnChange(outputDate);
+        } else {
+          const hours = date.getHours();
+          const minutes = Math.ceil(date.getMinutes() / 60 * 100).toString();
+          const minutesFormatted = minutes.length === 1 ? `0${minutes}` : minutes;
 
-            onChange(parseFloat(`${hours}.${minutesFormatted}`));
-          }
+          triggerOnChange(parseFloat(`${hours}.${minutesFormatted}`));
         }
       } else {
-        if (onError) {
-          onError()
-        }
+        triggerError();
       }
   }
 
