@@ -55,5 +55,43 @@
                 </property>
             </propertyGroup>
         </propertyGroup>
+        <propertyGroup caption="Actions">
+            <propertyGroup caption="General">
+                <property key="enableActions" type="boolean" defaultValue="false">
+                    <caption>Enable actions</caption>
+                    <description>Show actions to apply or cancel input changes</description>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Apply action">
+                <property key="applyAction" type="action">
+                    <caption>Action</caption>
+                    <description>Action to execute when user clicks on apply button</description>
+                </property>
+                <property key="applyBtnClass" type="expression" required="false">
+                    <caption>Class</caption>
+                    <description>Custom classes for the button</description>
+                    <returnType type="String" />
+                </property>
+                <property key="applyBtnIcon" type="icon" required="false">
+                    <caption>Icon</caption>
+                    <description>Button icon</description>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Cancel action">
+                <property key="cancelAction" type="action">
+                    <caption>Action</caption>
+                    <description>Action to execute when user clicks on apply button</description>
+                </property>
+                <property key="cancelBtnClass" type="expression" required="false">
+                    <caption>Class</caption>
+                    <description>Custom classes for the button</description>
+                    <returnType type="String" />
+                </property>
+                <property key="cancelBtnIcon" type="icon" required="false">
+                    <caption>Icon</caption>
+                    <description>Button icon</description>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
     </properties>
 </widget>

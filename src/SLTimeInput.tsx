@@ -1,6 +1,6 @@
-import { ReactElement, createElement, Fragment, useState, useEffect } from "react";
-import { ValueStatus } from "mendix";
-import { TimeInput } from "./components/TimeInput";
+import { ReactElement, createElement, Fragment, useState, useEffect, useRef } from "react";
+import { ValueStatus, ActionValue } from "mendix";
+import { ActionProps, TimeInput } from "./components/TimeInput";
 import { Alert } from "./components/Alert";
 import { SLTimeInputContainerProps } from "../typings/SLTimeInputProps";
 
@@ -40,6 +40,9 @@ export function SLTimeInput(props: SLTimeInputContainerProps): ReactElement {
     const [alert, setAlert] = useState<string>();
     const [inputValue, setInputValue] = useState<string | undefined>();
 
+    const applyBtnActionRef = useRef<ActionValue>();
+    const cancelBtnActionRef = useRef<ActionValue>();
+
     const onTimeInputChange = (output: Date | number | undefined) => {
         setAlert(undefined)
 
@@ -58,6 +61,43 @@ export function SLTimeInput(props: SLTimeInputContainerProps): ReactElement {
         setAlert(props.invalidMessage?.value)
     }
 
+    const onApplyBtnClick = () => {
+        if (applyBtnActionRef.current && applyBtnActionRef.current.canExecute) {
+            applyBtnActionRef.current.execute();
+        } else {
+            console.warn('Cannot execute applyBtn action');
+        }
+    }
+
+    const onCancelBtnClick = () => {
+        if (cancelBtnActionRef.current && cancelBtnActionRef.current.canExecute) {
+            cancelBtnActionRef.current.execute();
+        } else {
+            console.warn('Cannot execute cancelBtn action');
+        }
+    }
+
+    const getActionsConfig = (): ActionProps => {
+        const actionConfig: ActionProps = {
+            enabled: props.enableActions
+        }
+
+        if (props.enableActions) {
+            actionConfig.config = {
+                applyBtn: {
+                    className: props.applyBtnClass?.value ?? '',
+                    onClick: onApplyBtnClick
+                },
+                cancelBtn: {
+                    className: props.cancelBtnClass?.value ?? '',
+                    onClick: onCancelBtnClick
+                }
+            }
+        }
+
+        return actionConfig;
+    }
+
     useEffect(() => {
         props.value?.validation ? setAlert(props.value.validation) : setAlert(undefined)
     },[props.value?.validation])
@@ -70,6 +110,14 @@ export function SLTimeInput(props: SLTimeInputContainerProps): ReactElement {
         }
     }, [props.value?.value])
 
+    useEffect(() => {
+        applyBtnActionRef.current = props.applyAction
+    }, [props.applyAction?.canExecute])
+
+    useEffect(() => {
+        cancelBtnActionRef.current = props.cancelAction
+    }, [props.cancelAction?.canExecute])
+
      return <Fragment>
         <TimeInput
             value={inputValue}
@@ -79,6 +127,7 @@ export function SLTimeInput(props: SLTimeInputContainerProps): ReactElement {
             onChange={onTimeInputChange}
             disabled={props.value?.readOnly}
             onError={onTimeInputError}
+            actions={{...getActionsConfig()}}
         >
         <Alert mendixFeedback={props.mendixFeedback} instructionMessage={props.instructionMessage?.value}>{alert}</Alert>
         </TimeInput>

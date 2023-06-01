@@ -1,6 +1,7 @@
 import { FunctionComponent, createElement, Fragment } from "react";
 import classNames from "classnames";
 import { AlertIcon } from "./AlertIcon";
+import { Tooltip } from "./Tooltip/components/Tooltip";
 export interface AlertProps {
     alertStyle?: "default" | "primary" | "success" | "info" | "warning" | "danger";
     className?: string;
@@ -16,10 +17,19 @@ export const Alert: FunctionComponent<AlertProps> = ({ alertStyle, className, in
         </div>
         ):(
         <Fragment>
-            <div className={`custom-alert alert-${alertStyle}`}>
-                <AlertIcon />
-            </div>
-            <div className="custom-alert-tooltip">{children}{instructionMessage ? (<div className="custom-alert-instruction">{instructionMessage}</div>) : undefined}</div>
+            <Tooltip
+                autoClose={true}
+                offsetDistance={24}
+                showArrow={false}
+                tooltipTriggerContent={(
+                    <div className={`custom-alert alert-${alertStyle}`}>
+                        <AlertIcon />
+                    </div>
+                )}
+                tooltipContent={(
+                    <div>{children}{instructionMessage ? (<div className="custom-alert-instruction">{instructionMessage}</div>) : undefined}</div>
+                )}
+            />
         </Fragment>
         )
     ) : null;

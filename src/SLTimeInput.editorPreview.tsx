@@ -3,7 +3,7 @@ import { TimeInput } from "./components/TimeInput";
 import { SLTimeInputPreviewProps } from "../typings/SLTimeInputProps";
 
 export function preview(_: SLTimeInputPreviewProps): ReactElement {
-    return <TimeInput />;
+    return <TimeInput actions={{enabled: false}} />;
 }
 
 export function getPreviewCss(): string {

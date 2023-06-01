@@ -1,6 +1,21 @@
-import { ReactElement, createElement, useState, useEffect, ReactNode } from "react";
+import { ReactElement, createElement, useState, useEffect, ReactNode, useRef } from "react";
 import { CSSProperties } from "react";
 import classNames from "classnames";
+import Actions from "./Actions";
+
+export interface ActionProps {
+  enabled: boolean;
+    config?: {
+      applyBtn: {
+        className: string;
+        onClick: () => void;
+      }
+      cancelBtn: {
+        className: string;
+        onClick: () => void;
+      }
+    }
+}
 
 export interface Props {
   value?: string;
@@ -14,6 +29,7 @@ export interface Props {
   tabIndex?: number;
   disabled?: boolean;
   children?: ReactNode;
+  actions: ActionProps;
 }
 
 function parseMinute(minuteString: string): number {
@@ -59,8 +75,23 @@ function parseTimeString(timeString: string): Date | null {
   return date;
 }
 
-export function TimeInput({ value, className, style, tabIndex, outputFormat, disabled, children, outputDate = new Date(), onChange, onError }: Props): ReactElement {
+export function TimeInput({
+  value,
+  className,
+  style,
+  tabIndex,
+  outputFormat,
+  disabled,
+  children,
+  outputDate = new Date(),
+  actions,
+  onChange,
+  onError
+}: Props): ReactElement {
+  const inputRef = useRef<HTMLInputElement | null>(null); 
   const [inputValue, setInputValue] = useState<string>('');
+  const [showActions, setShowActions] = useState(false);
+
   const updateInputValue = (inputValue: string | undefined) => {
     let dateOutput: Date | null | undefined;
     if (inputValue) {
@@ -113,9 +144,51 @@ export function TimeInput({ value, className, style, tabIndex, outputFormat, dis
       }
   }
 
+  const onInputFocus = () => {
+    selectAllInputText();
+
+    if (actions.enabled) {
+      setTimeout(() => {
+        setShowActions(true);
+      }, 500);
+    }
+  }
+
+  const onApplyBtnClick = () => {
+    setShowActions(false);
+
+    actions.config?.applyBtn.onClick();
+  }
+
+  const onCancelBtnClick = () => {
+    setShowActions(false);
+
+    actions.config?.cancelBtn.onClick();
+  }
+
   const onKeyUp = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       onInputChange();
+      onApplyBtnClick();
+      blurInput();
+    }
+
+    if (e.key === 'Escape') {
+      onInputChange();
+      onCancelBtnClick();
+      blurInput();
+    }
+  }
+
+  const selectAllInputText = () => {
+    if (inputRef.current) {
+      inputRef.current.select();
+    }
+  }
+
+  const blurInput = () => {
+    if (inputRef.current) {
+      inputRef.current.blur();
     }
   }
 
@@ -128,19 +201,32 @@ export function TimeInput({ value, className, style, tabIndex, outputFormat, dis
     value ? updateInputValue(value) : setInputValue('');
   }, [value])
 
-  return <div className="widget-time-input">
-    <input
-      type='string'
-      value={inputValue}
-      className={classNames('form-control', className)}
-      style={style}
-      tabIndex={tabIndex}
-      placeholder={'00:00'}
-      onChange={e => setInputValue(e.target.value)}
-      onBlur={onInputChange}
-      onKeyUp={onKeyUp}
-      disabled={disabled}
-    />
-    {children}
-  </div>;
+  return (
+    <div className="widget-time-input">
+      <input
+        ref={inputRef}
+        type='string'
+        value={inputValue}
+        className={classNames('form-control', className)}
+        style={style}
+        tabIndex={tabIndex}
+        placeholder={'00:00'}
+        onChange={e => setInputValue(e.target.value)}
+        onFocus={onInputFocus}
+        onBlur={onInputChange}
+        onKeyUp={onKeyUp}
+        disabled={disabled}
+      />
+      {children}
+      { actions.enabled && actions.config ? (
+        <Actions
+          visible={showActions}
+          applyBtnClassName={actions.config.applyBtn.className}
+          onApplyBtnClick={onApplyBtnClick}
+          cancelBtnClassName={actions.config.cancelBtn.className}
+          onCancelBtnClick={onCancelBtnClick}
+        />
+      ): undefined}
+    </div>
+  );
 }

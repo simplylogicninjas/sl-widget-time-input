@@ -3,7 +3,7 @@
  * WARNING: All changes made to this file will be overwritten
  * @author Mendix Widgets Framework Team
  */
-import { DynamicValue, EditableValue } from "mendix";
+import { ActionValue, DynamicValue, EditableValue, WebIcon } from "mendix";
 import { Big } from "big.js";
 
 export interface SLTimeInputContainerProps {
@@ -14,6 +14,13 @@ export interface SLTimeInputContainerProps {
     mendixFeedback: boolean;
     invalidMessage: DynamicValue<string>;
     instructionMessage: DynamicValue<string>;
+    enableActions: boolean;
+    applyAction?: ActionValue;
+    applyBtnClass?: DynamicValue<string>;
+    applyBtnIcon?: DynamicValue<WebIcon>;
+    cancelAction?: ActionValue;
+    cancelBtnClass?: DynamicValue<string>;
+    cancelBtnIcon?: DynamicValue<WebIcon>;
 }
 
 export interface SLTimeInputPreviewProps {
@@ -23,4 +30,11 @@ export interface SLTimeInputPreviewProps {
     mendixFeedback: boolean;
     invalidMessage: string;
     instructionMessage: string;
+    enableActions: boolean;
+    applyAction: {} | null;
+    applyBtnClass: string;
+    applyBtnIcon: { type: "glyph"; iconClass: string; } | { type: "image"; imageUrl: string; } | null;
+    cancelAction: {} | null;
+    cancelBtnClass: string;
+    cancelBtnIcon: { type: "glyph"; iconClass: string; } | { type: "image"; imageUrl: string; } | null;
 }

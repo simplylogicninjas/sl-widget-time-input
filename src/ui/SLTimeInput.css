@@ -43,10 +43,34 @@ Place your custom CSS here
 }
 
 .custom-alert-instruction {
-    font-size: 0.75em;
+    font-size: 0.95em;
 }
 
 .custom-alert-icon {
     width: 1em;
     fill: currentColor;
+}
+
+.sl-timeinput-actions {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    top: 50%;
+    right: 0;
+    padding: 0 8px;
+}
+
+.sl-timeinput-actions.is-hidden {
+    transform: translate(50%, -50%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all .15s ease-in-out;
+}
+
+.sl-timeinput-actions.is-visible {
+    transform: translate(100%, -50%);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity .15s ease-in-out, visibility .15s ease-in-out, transform .25s ease-in-out;
 }
