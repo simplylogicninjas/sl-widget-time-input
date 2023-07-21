@@ -39,12 +39,22 @@ function parseMinute(minuteString: string): number {
 function parseTimeString(timeString: string): Date | null {
   // Regular expression to match the formats "10.59", "1059", "10h59m", or "10,75"
   const timeRegex = /^(\d{1,2})(?:[:]?(\d{1,2}))?(?:[hu:]?(\d{1,2}))?(?:[m]?)?(?:[,.:]?(\d{1,2}))?$/;
+  const timeStringToMatch = timeString.startsWith('.') ? `0${timeString}` : timeString;
 
   // Check if the input string matches the expected format
-  const match = timeRegex.exec(timeString);
+  const match = timeRegex.exec(timeStringToMatch);
   if (!match) {
     console.error("Invalid time format. Expected formats: '10.59', '1059', '10h59m', or '10,75'");
     return null;
+  }
+
+  const now = new Date();
+  const originalInput = parseInt(match[0]);
+
+  if (timeStringToMatch.length < 4 && originalInput > 23) {
+    const hoursFromMinutes = Math.floor(originalInput / 60);
+
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hoursFromMinutes, originalInput % 60);
   }
 
   // Extract the hours and minutes from the matched groups
@@ -62,6 +72,8 @@ function parseTimeString(timeString: string): Date | null {
     minutes = parseMinute(match[4]) * 60 / 100;
   }
 
+  minutes = Math.floor(minutes);
+
   // Validate the hours and minutes
   if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
     console.error("Invalid time. Hours must be between 0 and 23, and minutes must be between 0 and 59.");
@@ -69,10 +81,7 @@ function parseTimeString(timeString: string): Date | null {
   }
 
   // Create a new Date object with today's date and the specified time
-  const now = new Date();
-  const date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
-
-  return date;
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
 }
 
 export function TimeInput({

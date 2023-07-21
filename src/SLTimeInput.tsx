@@ -5,6 +5,7 @@ import { Alert } from "./components/Alert";
 import { SLTimeInputContainerProps } from "../typings/SLTimeInputProps";
 
 import "./ui/SLTimeInput.css";
+import "./components/Tooltip/ui/SLTooltip.css";
 import Big from "big.js";
 
 function getOutputFormat(value?: Date | Big): 'datetime' | 'decimal' {
