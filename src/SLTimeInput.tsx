@@ -48,9 +48,7 @@ export function SLTimeInput(props: SLTimeInputContainerProps): ReactElement {
 
         if (typeof output === 'undefined') {
             props.value.setValue(undefined);
-        }
-
-        if (output instanceof Date) {
+        } else if (output instanceof Date) {
             props.value.setValue(output)
         } else {
             props.value.setValue(Big(output as number))
