@@ -39,7 +39,7 @@ function parseMinute(minuteString: string): number {
 function parseTimeString(timeString: string): Date | null {
   // Regular expression to match the formats "10.59", "1059", "10h59m", or "10,75"
   const timeRegex = /^(\d{1,2})(?:[:]?(\d{1,2}))?(?:[hu:]?(\d{1,2}))?(?:[m]?)?(?:[,.:]?(\d{1,2}))?$/;
-  const timeStringToMatch = timeString.startsWith('.') ? `0${timeString}` : timeString;
+  const timeStringToMatch = timeString.startsWith('.') || timeString.startsWith(',')? `0${timeString}` : timeString;
 
   // Check if the input string matches the expected format
   const match = timeRegex.exec(timeStringToMatch);
