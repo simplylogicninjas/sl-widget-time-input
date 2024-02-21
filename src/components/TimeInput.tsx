@@ -2,6 +2,7 @@ import { ReactElement, createElement, useState, useEffect, ReactNode, useRef } f
 import { CSSProperties } from "react";
 import classNames from "classnames";
 import Actions from "./Actions";
+import { parseNumberValueToSeconds, parseHumanReadableValueToSeconds, parseTimeValueToSeconds } from "src/utils/value";
 
 export interface ActionProps {
   enabled: boolean;
@@ -32,56 +33,96 @@ export interface Props {
   actions: ActionProps;
 }
 
-function parseMinute(minuteString: string): number {
-  return parseInt(minuteString.length === 1 ? `${minuteString}0` : minuteString)
-}
-
 function parseTimeString(timeString: string): Date | null {
-  // Regular expression to match the formats "10.59", "1059", "10h59m", or "10,75"
-  const timeRegex = /^(\d{1,2})(?:[:]?(\d{1,2}))?(?:[hu:]?(\d{1,2}))?(?:[m]?)?(?:[,.:]?(\d{1,2}))?$/;
-  const timeStringToMatch = timeString.startsWith('.') || timeString.startsWith(',')? `0${timeString}` : timeString;
-
-  // Check if the input string matches the expected format
-  const match = timeRegex.exec(timeStringToMatch);
-  if (!match) {
-    console.error("Invalid time format. Expected formats: '10.59', '1059', '10h59m', or '10,75'");
-    return null;
-  }
-
   const now = new Date();
-  const originalInput = parseInt(match[0]);
+  const date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
 
-  if (timeStringToMatch.length < 4 && originalInput > 23) {
-    const hoursFromMinutes = Math.floor(originalInput / 60);
+  const parsedTimeValueToSeconds: number | null = parseTimeValueToSeconds(timeString);
 
-    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hoursFromMinutes, originalInput % 60);
+  if (parsedTimeValueToSeconds !== null) {
+    date.setSeconds(parsedTimeValueToSeconds);
+
+    if (date.getSeconds() > 50) {
+      date.setMinutes(date.getMinutes() + 1);
+      date.setSeconds(0);
+    }
+
+    return date;
   }
 
-  // Extract the hours and minutes from the matched groups
-  let hours = parseInt(match[1]);
-  let minutes = 0;
+  const parsedDecimalToSeconds: number | null = parseNumberValueToSeconds(timeString);
 
-  if (match[2]) {
-    // If the minutes are included in the input string (e.g. "10.59" or "1059"), extract them from the second matched group
-    minutes = parseMinute(match[2]);
-  } else if (match[3]) {
-    // If the minutes are included in the input string as part of a separate hours/minutes field (e.g. "10h59m"), extract them from the third matched group
-    minutes = parseInt(match[3]);
-  } else if (match[4]) {
-    // If the minutes are included in the input string using a comma instead of a dot (e.g. "10,75"), extract them from the fourth matched group
-    minutes = parseMinute(match[4]) * 60 / 100;
+  if (parsedDecimalToSeconds !== null) {
+    date.setSeconds(parsedDecimalToSeconds);
+
+    if (date.getSeconds() > 50) {
+      date.setMinutes(date.getMinutes() + 1);
+      date.setSeconds(0);
+    }
+
+    return date;
   }
 
-  minutes = Math.floor(minutes);
+  const parsedHumanReadableToSeconds: number | null = parseHumanReadableValueToSeconds(timeString);
 
-  // Validate the hours and minutes
-  if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-    console.error("Invalid time. Hours must be between 0 and 23, and minutes must be between 0 and 59.");
-    return null;
+  if (parsedHumanReadableToSeconds !== null) {
+    date.setSeconds(parsedHumanReadableToSeconds);
+
+    if (date.getSeconds() > 50) {
+      date.setMinutes(date.getMinutes() + 1);
+      date.setSeconds(0);
+    }
+
+    return date;
   }
 
-  // Create a new Date object with today's date and the specified time
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+  return null;
+
+  // // Regular expression to match the formats "10.59", "1059", "10h59m", or "10,75"
+  // const timeRegex = /^(\d{1,2})(?:[:]?(\d{1,2}))?(?:[hu:]?(\d{1,2}))?(?:[m]?)?(?:[,.:]?(\d{1,3}))?$/;
+  // const timeStringToMatch = timeString.startsWith('.') || timeString.startsWith(',')? `0${timeString}` : timeString;
+
+  // // Check if the input string matches the expected format
+  // const match = timeRegex.exec(timeStringToMatch);
+  // if (!match) {
+  //   console.error("Invalid time format. Expected formats: '10.59', '1059', '10h59m', or '10,75'");
+  //   return null;
+  // }
+
+  // const now = new Date();
+  // const originalInput = parseInt(match[0]);
+
+  // if (timeStringToMatch.length < 4 && originalInput > 23) {
+  //   const hoursFromMinutes = Math.floor(originalInput / 60);
+
+  //   return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hoursFromMinutes, originalInput % 60);
+  // }
+
+  // // Extract the hours and minutes from the matched groups
+  // let hours = parseInt(match[1]);
+  // let minutes = 0;
+
+  // if (match[2]) {
+  //   // If the minutes are included in the input string (e.g. "10.59" or "1059"), extract them from the second matched group
+  //   minutes = parseMinute(match[2]);
+  // } else if (match[3]) {
+  //   // If the minutes are included in the input string as part of a separate hours/minutes field (e.g. "10h59m"), extract them from the third matched group
+  //   minutes = parseInt(match[3]);
+  // } else if (match[4]) {
+  //   // If the minutes are included in the input string using a comma instead of a dot (e.g. "10,75"), extract them from the fourth matched group
+  //   minutes = parseMinute(match[4]) * 60 / 100;
+  // }
+
+  // minutes = Math.floor(minutes);
+
+  // // Validate the hours and minutes
+  // if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+  //   console.error("Invalid time. Hours must be between 0 and 23, and minutes must be between 0 and 59.");
+  //   return null;
+  // }
+
+  // // Create a new Date object with today's date and the specified time
+  // return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
 }
 
 export function TimeInput({
@@ -104,7 +145,7 @@ export function TimeInput({
   const updateInputValue = (inputValue: string | undefined) => {
     let dateOutput: Date | null | undefined;
     if (inputValue) {
-      dateOutput = parseTimeString(inputValue.replace(/\s/g, ""));
+      dateOutput = parseTimeString(inputValue);
       if (dateOutput) {
         const hourString = dateOutput.getHours().toString();
         const minuteString = dateOutput.getMinutes().toString();
@@ -135,22 +176,27 @@ export function TimeInput({
     }
 
     const date = updateInputValue(inputValue);
-      if (date) {
-        if (outputFormat === 'datetime') {
-          outputDate.setHours(date.getHours());
-          outputDate.setMinutes(date.getMinutes());
 
-          triggerOnChange(outputDate);
-        } else {
-          const hours = date.getHours();
-          const minutes = Math.ceil(date.getMinutes() / 60 * 100).toString();
-          const minutesFormatted = minutes.length === 1 ? `0${minutes}` : minutes;
+    if (date) {
+      if (outputFormat === 'datetime') {
+        outputDate.setHours(date.getHours());
+        outputDate.setMinutes(date.getMinutes());
+        outputDate.setSeconds(0);
 
-          triggerOnChange(parseFloat(`${hours}.${minutesFormatted}`));
-        }
+        triggerOnChange(outputDate);
       } else {
-        triggerError();
+        const hours = date.getHours();
+        // const minutes = date.getMinutes() / 60 * 100;
+        const minutes = date.getMinutes();
+        // const minutesFormatted = minutes > 0 && minutes.toString().length === 1 ? `0${minutes}` : minutes;
+        const minutesToDecimal = minutes / 60;
+        const decimalTime = hours + minutesToDecimal;
+        const decimal = parseFloat(decimalTime.toFixed(8))
+        triggerOnChange(decimal);
       }
+    } else {
+      triggerError();
+    }
   }
 
   const onInputFocus = () => {
@@ -215,6 +261,7 @@ export function TimeInput({
       <input
         ref={inputRef}
         type='string'
+        inputMode={'decimal'}
         value={inputValue}
         className={classNames('form-control', className)}
         style={style}

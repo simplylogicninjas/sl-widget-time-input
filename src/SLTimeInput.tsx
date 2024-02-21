@@ -7,6 +7,7 @@ import { SLTimeInputContainerProps } from "../typings/SLTimeInputProps";
 import "./ui/SLTimeInput.css";
 import "./components/Tooltip/ui/SLTooltip.css";
 import Big from "big.js";
+import TimeStatic from "./components/TimeStatic";
 
 function getOutputFormat(value?: Date | Big): 'datetime' | 'decimal' {
     if (!value) {
@@ -97,6 +98,31 @@ export function SLTimeInput(props: SLTimeInputContainerProps): ReactElement {
         return actionConfig;
     }
 
+    const renderTimeComponent = () => {
+        if (props.displayMode === 'input') {
+            return (
+                <TimeInput
+                    value={inputValue}
+                    tabIndex={props.tabIndex}
+                    outputFormat={getOutputFormat(props.value.value)}
+                    outputDate={props.value.value && props.value.value instanceof Date ? props.value.value : new Date()}
+                    onChange={onTimeInputChange}
+                    disabled={props.value?.readOnly}
+                    onError={onTimeInputError}
+                    actions={{...getActionsConfig()}}
+                >
+                    <Alert mendixFeedback={props.mendixFeedback} instructionMessage={props.instructionMessage?.value}>{alert}</Alert>
+                </TimeInput>
+            )
+        }
+
+        if (props.displayMode === 'static') {
+            return (
+                <TimeStatic value={inputValue} />
+            )
+        }
+    }
+
     useEffect(() => {
         props.value?.validation ? setAlert(props.value.validation) : setAlert(undefined)
     },[props.value?.validation])
@@ -118,17 +144,6 @@ export function SLTimeInput(props: SLTimeInputContainerProps): ReactElement {
     }, [props.cancelAction?.canExecute])
 
      return <Fragment>
-        <TimeInput
-            value={inputValue}
-            tabIndex={props.tabIndex}
-            outputFormat={getOutputFormat(props.value.value)}
-            outputDate={props.value.value && props.value.value instanceof Date ? props.value.value : new Date()}
-            onChange={onTimeInputChange}
-            disabled={props.value?.readOnly}
-            onError={onTimeInputError}
-            actions={{...getActionsConfig()}}
-        >
-        <Alert mendixFeedback={props.mendixFeedback} instructionMessage={props.instructionMessage?.value}>{alert}</Alert>
-        </TimeInput>
+        {renderTimeComponent()}
     </Fragment>;
 }

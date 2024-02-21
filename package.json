@@ -28,11 +28,13 @@
     "@mendix/pluggable-widgets-tools": "^9.18.0",
     "@types/big.js": "^6.0.2",
     "@types/react": "~17.0.1",
-    "@types/react-dom": "~17.0.1"
+    "@types/react-dom": "~17.0.1",
+    "@types/timestring": "^6.0.3"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.7",
     "classnames": "^2.2.6",
-    "react-popper": "^2.3.0"
+    "react-popper": "^2.3.0",
+    "timestring": "^7.0.0"
   }
 }

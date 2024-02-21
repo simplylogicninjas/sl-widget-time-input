@@ -11,6 +11,16 @@
             <propertyGroup caption="Label">
                 <systemProperty key="Label" />
             </propertyGroup>
+            <propertyGroup caption="Display mode">
+                <property key="displayMode" type="enumeration" defaultValue="input">
+                    <caption>Display mode</caption>
+                    <description />
+                    <enumerationValues>
+                        <enumerationValue key="input">Input</enumerationValue>
+                        <enumerationValue key="static">Static</enumerationValue>
+                    </enumerationValues>
+                </property>
+            </propertyGroup>
             <propertyGroup caption="Editability">
                 <systemProperty key="Editability"/>
             </propertyGroup>

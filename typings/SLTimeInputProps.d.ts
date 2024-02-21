@@ -6,10 +6,13 @@
 import { ActionValue, DynamicValue, EditableValue, WebIcon } from "mendix";
 import { Big } from "big.js";
 
+export type DisplayModeEnum = "input" | "static";
+
 export interface SLTimeInputContainerProps {
     name: string;
     tabIndex?: number;
     id: string;
+    displayMode: DisplayModeEnum;
     value: EditableValue<Big | Date>;
     mendixFeedback: boolean;
     invalidMessage: DynamicValue<string>;
@@ -25,6 +28,7 @@ export interface SLTimeInputContainerProps {
 
 export interface SLTimeInputPreviewProps {
     readOnly: boolean;
+    displayMode: DisplayModeEnum;
     value: string;
     onValueChange: {} | null;
     mendixFeedback: boolean;
